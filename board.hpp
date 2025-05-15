@@ -3,7 +3,7 @@
 class Board{
 public:
     Board();
-    
+
     uint64_t set_square(int squere);
     bool piece_present(uint64_t board, int squere);
     char piece_at_square(int square);
@@ -15,12 +15,13 @@ public:
         }
     };
 
-    void print_bitboard(uint64_t board);
+    void print_bitboard();
 
-
+    
     int visual_board[64];
 
-    uint64_t board;
+    uint64_t boardWhite;
+    uint64_t boardBlack;
 
     uint64_t blackKing;
     uint64_t blackQueen;
@@ -35,5 +36,6 @@ public:
     uint64_t whiteBishop;
     uint64_t whiteKnight;
     uint64_t whitePawn;
+    
 
 };

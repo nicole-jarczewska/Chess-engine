@@ -23,9 +23,10 @@
 int main() {
     Board board;
     Moves moves;
-    board.print_bitboard(board.board);
-    board.whitePawn = moves.knight(board.whiteKnight);
-    board.print_bitboard(board.whiteKnight);
+    board.print_bitboard();
+    PawnMoves pawnMoves = moves.pawn(board.whitePawn, board.boardWhite, board.boardBlack, 1);
+    board.whitePawn = pawnMoves.forward | pawnMoves.doubleForward | pawnMoves.leftCapture | pawnMoves.rightCapture;
+    board.print_bitboard();
 
     // board.whiteKnight = moves.knight(board.whiteKnight);
     // std::cout << board.whiteKnight << std::endl; 

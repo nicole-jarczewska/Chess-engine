@@ -1,51 +1,46 @@
 ﻿#include "board.hpp"
 
 Board::Board(){
-    visual_board[0] = -5;
-    visual_board[1] = -4;
-    visual_board[2] = -3;
-    visual_board[3] = -2;
-    visual_board[4] = -1;
-    visual_board[5] = -3;
-    visual_board[6] = -4;
-    visual_board[7] = -5;
+    visual_board[56] = -5;
+    visual_board[57] = -4;
+    visual_board[58] = -3;
+    visual_board[59] = -2;
+    visual_board[60] = -1;
+    visual_board[61] = -3;
+    visual_board[62] = -4;
+    visual_board[63] = -5;
 
-    visual_board[56] = 5;
-    visual_board[57] = 4;
-    visual_board[58] = 3;
-    visual_board[59] = 2;
-    visual_board[60] = 1;
-    visual_board[61] = 3;
-    visual_board[62] = 4;
-    visual_board[63] = 5;
+    for (int i = 48; i < 56; ++i) visual_board[i] = -6;
 
-    for(int i = 8; i < 16; ++i) {
-            visual_board[i] = -6;
-    }
+    for (int i = 8; i < 48; ++i) visual_board[i] = 0;
 
-    for (int i = 16; i < 48; i++){
-            visual_board[i] = 0;
-    }
+    for (int i = 8; i < 16; ++i) visual_board[i] = 6;
 
-    for(int i = 48; i < 56; ++i) {
-            visual_board[i] = 6;
-    }
+    visual_board[0] = 5;
+    visual_board[1] = 4;
+    visual_board[2] = 3;
+    visual_board[3] = 2;
+    visual_board[4] = 1;
+    visual_board[5] = 3;
+    visual_board[6] = 4;
+    visual_board[7] = 5;
 
-    board = 0xFFFF00000000FFFFULL;
+    boardWhite = 0x000000000000FFFFULL;
+    boardBlack = 0xFFFF000000000000ULL;
 
-    blackKing = set_square(4);
-    blackQueen = set_square(3);
-    blackRook = set_square(0) | set_square(7);
-    blackBishop = set_square(2) | set_square(5);
-    blackKnight = set_square(1) | set_square(6);
-    blackPawn = 0x000000000000FF00ULL;
+    whiteKing = set_square(4);
+    whiteQueen = set_square(3);
+    whiteRook = set_square(0) | set_square(7);
+    whiteBishop = set_square(2) | set_square(5);
+    whiteKnight = set_square(1) | set_square(6);
+    whitePawn = 0x000000000000FF00ULL;           
 
-    whiteKing = set_square(60);
-    whiteQueen = set_square(59);
-    whiteRook = set_square(56) | set_square(63);
-    whiteBishop = set_square(58) | set_square(61);
-    whiteKnight = set_square(57) | set_square(62);
-    whitePawn = 0x00FF000000000000ULL;
+    blackKing = set_square(60);
+    blackQueen = set_square(59);
+    blackRook = set_square(56) | set_square(63);
+    blackBishop = set_square(58) | set_square(61);
+    blackKnight = set_square(57) | set_square(62);
+    blackPawn = 0x00FF000000000000ULL;
 
 }
 
@@ -75,10 +70,9 @@ char Board::piece_at_square(int square){
     return '.';
 }
 
-void Board::print_bitboard(uint64_t board){
-    int count = 1;
-    for (int rank = 0; rank < 8; rank++) {
-        std::cout << count++ << "  ";
+void Board::print_bitboard(){
+    for (int rank = 7; rank >= 0; rank--) {
+        std::cout << rank << "  ";
         for (int file = 0; file < 8; ++file) {
             int square = rank * 8 + file;
             std::cout << piece_at_square(square) << " ";
