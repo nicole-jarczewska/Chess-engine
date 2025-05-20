@@ -12,10 +12,10 @@
 #include <queue>
 #include <random>
 
-#include "moves.hpp"
+#include "include/moves.hpp"
 #include "moves.cpp"
 
-#include "board.hpp"
+#include "include/board.hpp"
 #include "board.cpp"
 
 
@@ -24,9 +24,13 @@ int main() {
     Board board;
     Moves moves;
     board.print_bitboard();
-    PawnMoves pawnMoves = moves.pawn(board.whitePawn, board.boardWhite, board.boardBlack, 1);
-    board.whitePawn = pawnMoves.forward | pawnMoves.doubleForward | pawnMoves.leftCapture | pawnMoves.rightCapture;
+    board.blackRook = moves.bishop(board.blackRook, 0ULL, board.blackKing);
+    
+
+    // board.blackRook = board.blackRook >> 3;
     board.print_bitboard();
+
+    std::cout << "Piece at square 12: " << board.piece_at_square(1) << std::endl;
 
     // board.whiteKnight = moves.knight(board.whiteKnight);
     // std::cout << board.whiteKnight << std::endl; 
