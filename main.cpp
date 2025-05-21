@@ -24,7 +24,7 @@ int main() {
     Board board;
     Moves moves;
     board.print_bitboard();
-    board.blackRook = moves.bishop(board.blackRook, 0ULL, board.blackKing);
+    board.blackRook = moves.allBishops(board.blackRook, 0ULL, board.blackKing);
     
 
     // board.blackRook = board.blackRook >> 3;

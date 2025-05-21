@@ -52,9 +52,9 @@ Board::Board(){
     whiteKnight = 0x0ULL;
     whitePawn = 0x0ULL;           
 
-    blackKing = set_square(45);
+    blackKing = set_square(62);
     blackQueen = 0x0ULL;
-    blackRook = set_square(26);//| set_square(63);
+    blackRook = set_square(26) | set_square(61);
     blackBishop = 0x0ULL;
     blackKnight = 0x0ULL;
     blackPawn = 0x0ULL;
