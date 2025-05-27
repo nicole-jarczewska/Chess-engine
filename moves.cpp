@@ -3,6 +3,7 @@
 uint64_t Moves::kingMoves(uint64_t king, uint64_t board, uint64_t boardEnemy){
     if (king == 0) return 0;
     uint64_t move = 0ULL;
+    
     move |= (king << 8); // up
     move |= (king >> 8); // down
 

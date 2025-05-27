@@ -45,16 +45,16 @@
 // }
 
 Board::Board(){
-    whiteKing = 0x0ULL;
+    whiteKing = 0x8000000000000000ULL;
     whiteQueen = 0x0ULL;
-    whiteRook = 0x0ULL;
+    whiteRook = set_square(0);
     whiteBishop = 0x0ULL;
     whiteKnight = 0x0ULL;
     whitePawn = 0x0ULL;           
 
-    blackKing = set_square(62);
+    blackKing = 0x4000000000000000ULL;
     blackQueen = 0x0ULL;
-    blackRook = set_square(26) | set_square(61);
+    blackRook = set_square(52);
     blackBishop = 0x0ULL;
     blackKnight = 0x0ULL;
     blackPawn = 0x0ULL;

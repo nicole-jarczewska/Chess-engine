@@ -31,9 +31,7 @@ public:
     uint64_t pawnMoves(uint64_t pawn, uint64_t board, uint64_t boardEnemy, int color);
 
     bool isCheck(uint64_t king, uint64_t moveEnemy);
-    bool isCheckmate(uint64_t king, uint64_t board, uint64_t boardEnemy,  uint64_t movesEnemy);
+    bool isCheckmate(uint64_t king, uint64_t board, uint64_t boardEnemy,  uint64_t movesEnemy, 
+        int color, std::vector<std::pair<std::string, uint64_t>> pieces, std::vector<std::pair<std::string, uint64_t>> piecesEnemy);
     bool isStalemate(uint64_t king, uint64_t board, uint64_t boardEnemy,  uint64_t movesEnemy);
-
-private:
-    
 };
