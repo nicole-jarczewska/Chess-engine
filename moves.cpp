@@ -1,16 +1,6 @@
 ﻿#include "include/moves.hpp"
 
-const uint64_t A_vertical = 0x0101010101010101ULL;
-const uint64_t B_vertical = 0x0202020202020202ULL;
-const uint64_t G_vertical = 0x4040404040404040ULL;
-const uint64_t H_vertical = 0x8080808080808080ULL;
-
-const uint64_t eight_horizontal =   0xFF00000000000000ULL;
-const uint64_t seven_horizontal =   0xFF000000000000ULL;
-const uint64_t two_horizontal =     0xFF00ULL;
-const uint64_t one_horizontal =     0xFFULL;
-
-uint64_t Moves::king(uint64_t king, uint64_t board, uint64_t boardEnemy){
+uint64_t Moves::kingMoves(uint64_t king, uint64_t board, uint64_t boardEnemy){
     if (king == 0) return 0;
     uint64_t move = 0ULL;
     move |= (king << 8); // up
@@ -27,12 +17,12 @@ uint64_t Moves::king(uint64_t king, uint64_t board, uint64_t boardEnemy){
     return move;
 }
 
-uint64_t Moves::queen(uint64_t queen, uint64_t board, uint64_t boardEnemy){
+uint64_t Moves::queenMoves(uint64_t queen, uint64_t board, uint64_t boardEnemy){
     if (queen == 0) return 0;
-    return Moves::rook(queen, board, boardEnemy) | Moves::bishop(queen, board, boardEnemy);
+    return Moves::rookMoves(queen, board, boardEnemy) | Moves::bishopMoves(queen, board, boardEnemy);
 }
 
-uint64_t Moves::rook(uint64_t rook, uint64_t board, uint64_t boardEnemy){
+uint64_t Moves::rookMoves(uint64_t rook, uint64_t board, uint64_t boardEnemy){
     uint64_t moves = 0ULL;
 
     // int at_square = __builtin_ctzll(rook) + 1;
@@ -71,19 +61,19 @@ uint64_t Moves::rook(uint64_t rook, uint64_t board, uint64_t boardEnemy){
     return moves;
 }
 
-uint64_t Moves::allRooks(uint64_t rooks, uint64_t board, uint64_t boardEnemy) {
+uint64_t Moves::allRooksMoves(uint64_t rooks, uint64_t board, uint64_t boardEnemy) {
     if (rooks == 0) return 0;
     uint64_t moves = 0ULL;
     while (rooks) {
         int at_square = __builtin_ctzll(rooks);
         uint64_t square = 1ULL << at_square;
-        moves |= rook(square, board, boardEnemy);
+        moves |= rookMoves(square, board, boardEnemy);
         rooks &= rooks - 1;
     }
     return moves;
 }
 
-uint64_t Moves::bishop(uint64_t bishop, uint64_t board, uint64_t boardEnemy){
+uint64_t Moves::bishopMoves(uint64_t bishop, uint64_t board, uint64_t boardEnemy){
     uint64_t moves = 0ULL;
     // int at_square = __builtin_ctzll(bishop) + 1;
     // uint64_t square = 1ULL << at_square;
@@ -119,31 +109,39 @@ uint64_t Moves::bishop(uint64_t bishop, uint64_t board, uint64_t boardEnemy){
     return moves;
 }
 
-uint64_t Moves::allBishops(uint64_t bishops, uint64_t board, uint64_t boardEnemy) {
+uint64_t Moves::allBishopsMoves(uint64_t bishops, uint64_t board, uint64_t boardEnemy) {
     if (bishops == 0) return 0;
     uint64_t move = 0ULL;
     while (bishops) {
         int at_square = __builtin_ctzll(bishops);
         uint64_t square = 1ULL << at_square;
-        move |= bishop(square, board, boardEnemy);
+        move |= bishopMoves(square, board, boardEnemy);
         bishops &= bishops - 1;
     }
     return move;
 }
 
-uint64_t Moves::knight(uint64_t knight, uint64_t board, uint64_t boardEnemy) {
+uint64_t Moves::knightMoves(uint64_t knight, uint64_t board, uint64_t boardEnemy) {
     if (knight == 0) return 0;
+    uint64_t moves = 0ULL;
+
     uint64_t l1 = (knight >> 1) & (~A_vertical);
     uint64_t l2 = (knight >> 2) & (~H_vertical & ~G_vertical);
     uint64_t r1 = (knight << 1) & (~A_vertical);
     uint64_t r2 = (knight << 2) & (~A_vertical & ~B_vertical);
 
-    return (l1 << 16) | (l2 << 8) | (r1 << 16) | (r2 << 8) |
-           (l1 >> 16) | (l2 >> 8) | (r1 >> 16) | (r2 >> 8);
+    moves |= (l1 << 16) | (l2 << 8);
+    moves |= (r1 << 16) | (r2 << 8);
+    moves |= (l1 >> 16) | (l2 >> 8);
+    moves |= (r1 >> 16) | (r2 >> 8);
+
+    moves &= ~board;
+
+    return moves;
 }
 
-PawnMoves Moves::pawn(uint64_t pawn, uint64_t board, uint64_t boardEnemy, int color) {
-    if (pawn == 0) return {0, 0, 0, 0};
+uint64_t Moves::pawnMoves(uint64_t pawn, uint64_t board, uint64_t boardEnemy, int color) {
+    if (pawn == 0) return 0;
      uint64_t forward = 0ULL, doubleForward = 0ULL, leftCapture = 0ULL, rightCapture = 0ULL;
      uint64_t empty = ~(board | boardEnemy);
 
@@ -159,7 +157,7 @@ PawnMoves Moves::pawn(uint64_t pawn, uint64_t board, uint64_t boardEnemy, int co
         rightCapture = ((pawn & ~A_vertical) >> 7) & board;
     }
 
-    return { forward, doubleForward, leftCapture, rightCapture };
+    return forward | doubleForward | leftCapture | rightCapture;
 }
 
 // board.whitePawn &= ~board.set_square(12);  // Remove from e2

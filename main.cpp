@@ -1,36 +1,24 @@
-﻿#include <stdlib.h>
-#include <cstdlib>
-#include <cstdint>
-#include <algorithm>
-#include <iostream>
-#include <filesystem>
-#include <fstream>
-#include <vector>
-#include <optional>
-#include <ctime>
-#include <chrono>
-#include <queue>
-#include <random>
+﻿
 
-#include "include/moves.hpp"
-#include "moves.cpp"
-
-#include "include/board.hpp"
-#include "board.cpp"
-
-
+#include "engine.cpp"
 
 int main() {
-    Board board;
-    Moves moves;
-    board.print_bitboard();
-    board.blackRook = moves.allBishops(board.blackRook, 0ULL, board.blackKing);
-    
+    int gameState = 0; // 0:palying, 1:check(either side), 2:victory, 3:enemy victory, 4:draw
+    int turn = 1; // 1:you, -1:enemy
+    int COLOR = 1;
+    std::vector<std::pair<std::string, uint64_t>> pieces;
+    std::vector<std::pair<std::string, uint64_t>> piecesEnemy;
 
-    // board.blackRook = board.blackRook >> 3;
-    board.print_bitboard();
+    if (COLOR == 1) {
+        pieces = piecesWhite;
+        piecesEnemy = piecesBlack;
+    } else {
+        pieces = piecesBlack;
+        piecesEnemy = piecesWhite;
+    }
 
-    std::cout << "Piece at square 12: " << board.piece_at_square(1) << std::endl;
+
+    // std::cout << "Piece at square 12: " << board.piece_at_square(1) << std::endl;
 
     // board.whiteKnight = moves.knight(board.whiteKnight);
     // std::cout << board.whiteKnight << std::endl; 
