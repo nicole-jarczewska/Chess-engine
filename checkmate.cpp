@@ -45,37 +45,22 @@ bool Moves::isCheck(uint64_t king, uint64_t moveEnemy) {
 
 bool Moves::isCheckmate(uint64_t king, uint64_t board, uint64_t boardEnemy,  uint64_t movesEnemy, int color,
 std::vector<std::pair<std::string, uint64_t>> pieces, std::vector<std::pair<std::string, uint64_t>> piecesEnemy){
-uint64_t kingPotentialMoves = kingMoves(king, board, boardEnemy | movesEnemy);
+    uint64_t kingPotentialMoves = kingMoves(king, board, boardEnemy);
+    if((kingPotentialMoves & movesEnemy) != 0ULL) return false; // king is not in check
 
 
-    // // all legal moves for allied pieces
-    // for (auto& [type, bitboard] : pieces) {
-    //     if (bitboard == 0) continue;
-    //     potentialMoves |= iterateMoves(bitboard, boardEnemy, board, color, type);
-    // }
-
-    // if(potentialMoves & boardEnemy != 0ULL){
-    //    for (const auto& [type, bitboard] : piecesEnemy) {
-    //         if (bitboard == 0) continue;
-    //         potentialEnemyMoves |= iterateMoves(bitboard, boardEnemy, board, color, type);
-    //     }
-    // }
-       
-    // return true; //checkmate
-
-    // Step 2: Identify checking piece(s)
     std::vector<uint64_t> checkingPieces;
     for (const auto& [type, bitboard] : piecesEnemy) {
         if (bitboard == 0) continue;
-
-        for (int i = 0; i < 64; ++i) {
-            uint64_t attacker = 1ULL << i;
-            if ((bitboard & attacker) == 0) continue;
+        uint64_t bitboardCopy = bitboard;
+        while(bitboardCopy) {
+            uint64_t attacker = 1ULL << __builtin_ctzll(bitboardCopy);
 
             uint64_t attackMask = iterateMoves(attacker, boardEnemy, board, -color, type);
             if ((attackMask & king) != 0ULL) {
                 checkingPieces.push_back(attacker);
             }
+            bitboardCopy &= (bitboardCopy - 1); 
         }
     }
 
@@ -101,15 +86,10 @@ uint64_t kingPotentialMoves = kingMoves(king, board, boardEnemy | movesEnemy);
 
             uint64_t moves = iterateMoves(from, boardEnemy, board, color, type);
 
-            // Can this piece capture the checker or block?
             if ((moves & checker) != 0ULL || (moves & blockMask) != 0ULL) {
                 return false; // Escape is possible
             }
         }
-    }
-
-    if ((kingPotentialMoves & movesEnemy) != 0) { // king has no moves
-        return true;
     }
 
     return true;

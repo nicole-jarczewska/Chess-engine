@@ -2,6 +2,7 @@
 
 void resetGame() {
     turn = (COLOR == 1 ? 1 : -1);
+    turnsTaken = 0;
     gameState = 0;
     selectedSquare = -1;
     highlightedSquares.clear();

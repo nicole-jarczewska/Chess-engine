@@ -96,7 +96,7 @@ int pieceValue(const std::string& type) {
         {"bishop", 3},
         {"rook", 5},
         {"queen", 9},
-        {"king", INT_MAX}
+        {"king", 10000}
     };
 
     auto it = pieceValue.find(type);
@@ -121,7 +121,7 @@ std::vector<std::pair<std::string, uint64_t>>& pieces, std::vector<std::pair<std
 
     if (MOVES.isCheck(king, potentialEnemyMoves)) {
         if (MOVES.isCheckmate(king, board, boardEnemy, potentialEnemyMoves, color, pieces, piecesEnemy)) {
-            return (turn == 1) ? 2 : 3;  // 2: player wins, 3: enemy wins
+            return (turn == 1) ? 3 : 2;  // 2: player wins, 3: enemy wins
         }
         return 1;  // in check
     }

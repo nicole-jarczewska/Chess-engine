@@ -1,5 +1,6 @@
 ﻿// #include "engine_main.cpp"
 #include "engine.cpp"
+#include "include/chess.hpp"
 
 // int gameLoop(){
 //     int gameState = 0; // 0: playing, 1: check, 2: you win, 3: enemy wins, 4: draw

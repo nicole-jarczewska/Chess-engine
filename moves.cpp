@@ -4,19 +4,16 @@ uint64_t Moves::kingMoves(uint64_t king, uint64_t board, uint64_t boardEnemy){
     if (king == 0) return 0;
     uint64_t moves = 0ULL;
 
-    // Vertical
-    moves |= (king << 8);   // up
-    moves |= (king >> 8);   // down
+    moves |= (king & ~eight_horizontal) << 8;   // up
+    moves |= (king & ~one_horizontal) >> 8;   // down
 
-    // Horizontal
-    moves |= (king << 1) & ~A_vertical;  // right
-    moves |= (king >> 1) & ~H_vertical;  // left
+    moves |= (king & ~H_vertical) << 1;  // right
+    moves |= (king & ~A_vertical) >> 1;  // left
 
-    // Diagonals
-    moves |= (king << 9) & ~A_vertical;  // up-right
-    moves |= (king << 7) & ~H_vertical;  // up-left
-    moves |= (king >> 7) & ~A_vertical;  // down-right
-    moves |= (king >> 9) & ~H_vertical;  // down-left
+    moves |= (king & ~H_vertical) << 9;  // up-right
+    moves |= (king & ~A_vertical) << 7;  // up-left
+    moves |= (king & ~A_vertical) >> 9;  // down-right
+    moves |= (king & ~H_vertical) >> 7;  // down-left
 
     moves &= ~board;
 
@@ -42,7 +39,7 @@ uint64_t Moves::rookMoves(uint64_t rook, uint64_t board, uint64_t boardEnemy){
     }
 
     // down
-    for (uint64_t potencial_move = rook >> 8; potencial_move != 0&& ((potencial_move << 8) & one_horizontal) == 0; potencial_move >>= 8) {
+    for (uint64_t potencial_move = rook >> 8; potencial_move != 0 && ((potencial_move << 8) & one_horizontal) == 0; potencial_move >>= 8) {
         if (board & potencial_move) break;
         moves |= potencial_move;
         if (boardEnemy & potencial_move) break;
