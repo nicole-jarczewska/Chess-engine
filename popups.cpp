@@ -3,7 +3,7 @@
 int chooseColor(SDL_Renderer* renderer) {
     const int popupWidth = 300;
     const int popupHeight = 150;
-    SDL_Window* popup = SDL_CreateWindow("Choose Color",
+    SDL_Window* popup = SDL_CreateWindow("Choose color",
                                          SDL_WINDOWPOS_CENTERED,
                                          SDL_WINDOWPOS_CENTERED,
                                          popupWidth, popupHeight, 0);
@@ -67,7 +67,7 @@ int chooseColor(SDL_Renderer* renderer) {
 int chooseDifficulty(SDL_Renderer* renderer) {
     const int popupWidth = 400;
     const int popupHeight = 200;
-    SDL_Window* popup = SDL_CreateWindow("Choose Difficulty",
+    SDL_Window* popup = SDL_CreateWindow("Choose difficulty",
                                          SDL_WINDOWPOS_CENTERED,
                                          SDL_WINDOWPOS_CENTERED,
                                          popupWidth, popupHeight, 0);
@@ -95,7 +95,7 @@ int chooseDifficulty(SDL_Renderer* renderer) {
     if (!easyBtnTex || !mediumBtnTex || !hardBtnTex) {
         SDL_DestroyRenderer(popupRenderer);
         SDL_DestroyWindow(popup);
-        return 4; // default to medium if loading fails
+        return 4;
     }
 
     SDL_Rect easyBtn = { 40, 70, 100, 50 };
@@ -103,7 +103,7 @@ int chooseDifficulty(SDL_Renderer* renderer) {
     SDL_Rect hardBtn = { 260, 70, 100, 50 };
 
     bool choosing = true;
-    int difficulty = 4; // default depth level (medium)
+    int difficulty = 4;
 
     SDL_Event e;
 

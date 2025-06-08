@@ -23,3 +23,7 @@ std::vector<std::pair<std::string, uint64_t*>> piecesEnemyPTR;
 
 int selectedSquare = -1;
 std::vector<int> highlightedSquares;
+
+int chooseColor(SDL_Renderer* renderer);
+
+int chooseDifficulty(SDL_Renderer* renderer);

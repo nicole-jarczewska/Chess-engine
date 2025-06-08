@@ -1,13 +1,27 @@
 #include "include/chess.hpp"
 
 void resetGame() {
+    SDL_Window* tempWindow = SDL_CreateWindow("temp", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 100, 100, SDL_WINDOW_HIDDEN);
+    SDL_Renderer* tempRenderer = SDL_CreateRenderer(tempWindow, -1, SDL_RENDERER_ACCELERATED);
+
+    COLOR = chooseColor(tempRenderer); // let player choose color
+    depth = chooseDifficulty(tempRenderer); // let player choose difficulty
+
     turn = (COLOR == 1 ? 1 : -1);
+    isFlipped = (COLOR == -1); // flip board if player is black
     turnsTaken = 0;
     gameState = 0;
+
+    piecesPTR = COLOR == 1 ? piecesWhite : piecesBlack;
+    piecesEnemyPTR = COLOR == 1 ? piecesBlack : piecesWhite;
+
     selectedSquare = -1;
     highlightedSquares.clear();
     BOARD.reset();
     BOARD.flip(isFlipped);
+
+    SDL_DestroyRenderer(tempRenderer);
+    SDL_DestroyWindow(tempWindow);
 }
 
 std::string getPieceTypeAtSquare(int square, int color) {
@@ -16,7 +30,7 @@ std::string getPieceTypeAtSquare(int square, int color) {
             return type;
         }
     }
-    return "pawn"; // fallback
+    return "pawn";
 }
 
 bool loadTextures() {
@@ -59,7 +73,7 @@ void drawBoard() {
         int col = sq % 8;
         int guiRow = isFlipped ? row : (7 - row);
 
-        if (((row + col) % 2 == 1 && COLOR == 1)||((row + col) % 2 == 0 && COLOR == -1)) { // light tiles for white player
+        if (((row + col) % 2 == 1 && COLOR == 1)||((row + col) % 2 == 0 && COLOR == -1)) {
             SDL_SetRenderDrawColor(renderer, 60, 200, 90, 25); // lighter color for light tales
         } else {
             SDL_SetRenderDrawColor(renderer, 20, 150, 50, 15); // darker color for dark tiles

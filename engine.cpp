@@ -1,105 +1,38 @@
 ﻿#include "include/engine.hpp"
 #include "engine_support.cpp"
 
-#include "moves.cpp"
-#include "checkmate.cpp"
-#include "board.cpp"
-
-std::vector<Move> validMoves(uint64_t piece, int color,std::vector<std::pair<std::string, uint64_t>>& pieces, 
-std::vector<std::pair<std::string, uint64_t>>& piecesEnemy) {
-    std::vector<Move> moves;
-    std::string pieceType;
-
-    uint64_t board = countBoard(pieces);
-    uint64_t boardEnemy = countBoard(piecesEnemy);
-
-    for (auto& [type, bitboard] : pieces) {
-        if (bitboard & piece) {
-            pieceType = type;
-            break;
-        }
-    }
-
-    auto bitboardCopy = piece;
-
-    while (bitboardCopy) {
-        uint64_t onePiece = 1ULL << __builtin_ctzll(bitboardCopy);
-        uint64_t moveMap = iterateMoves(onePiece, board, boardEnemy, color, pieceType);
-            
-        while (moveMap) {
-                uint64_t to = 1ULL << __builtin_ctzll(moveMap);
-
-                auto piecesCopy = pieces;
-                auto piecesEnemyCopy = piecesEnemy;
-
-                Move candidateMove{pieceType, onePiece, to};
-                applyMoveMM(color, piecesCopy, piecesEnemyCopy, candidateMove);
-
-                uint64_t boardCopy = 0, boardEnemyCopy = 0;
-                for (auto& [_, bb] : piecesCopy) boardCopy |= bb;
-                for (auto& [_, bb] : piecesEnemyCopy) boardEnemyCopy |= bb;
-
-                if (initialCheck(1, color, piecesCopy, piecesEnemyCopy) == 0)
-                    moves.push_back(candidateMove);
-
-                moveMap &= (moveMap - 1);
-        }
-
-        bitboardCopy &= (bitboardCopy - 1);
-    }
-
-    return moves;
-}
+#include "include/rules/moves.cpp"
+#include "include/rules/checkmate.cpp"
+#include "include/rules/board.cpp"
 
 int evaluate(int color, std::vector<std::pair<std::string, uint64_t>> pieces, std::vector<std::pair<std::string, uint64_t>> piecesEnemy) { //int turn, uint64_t move, int color
     int score = 0;
-    for (const auto& [type, bitboard] : pieces){
-        score += __builtin_popcountll(bitboard) * pieceValue(type);
-    //     if(type == "pawn"){
-    //     if (color == 1) score += __builtin_popcountll(bitboard & 0x00FF000000000000ULL) * 3; // white pawns about to be promoted
-    //     else score += __builtin_popcountll(bitboard & 0x000000000000FF00ULL) * 3; // black pawns about to be promoted
-    //     }
-    }
-
-    for (const auto& [type, bitboard] : piecesEnemy){
-        score -= __builtin_popcountll(bitboard) * pieceValue(type);
-        // if(type == "pawn"){
-        // if (color == 1) score -= __builtin_popcountll(bitboard & 0x00FF000000000000ULL) * 3; // white pawns about to be promoted
-        // else score -= __builtin_popcountll(bitboard & 0x000000000000FF00ULL) * 3; // black pawns about to be promoted
-        // }
-    }
     
+    for (const auto& [type, bitboard] : pieces)
+        score += __builtin_popcountll(bitboard) * pieceValue(type);
 
+    for (const auto& [type, bitboard] : piecesEnemy)
+        score -= __builtin_popcountll(bitboard) * pieceValue(type);
+    
     // extra points for figures near centre // no pawn so engine evoleves figures //only until 15 turns so engine 
     if(turnsTaken < 15) {
-        uint64_t board = 0, boardEnemy = 0;
-        for (auto& [type, bb] : pieces) 
-            if(type != "pawn") board |= bb;
-        for (auto& [type, bb] : piecesEnemy) 
-            if(type != "pawn")boardEnemy |= bb;
+        for (auto& [type, bitboard] : pieces) 
+            if(type != "pawn"){
+                score += __builtin_popcountll(bitboard & 0x7E7E7E7E7E7E00ULL) * 1; // near the center  
+                score += __builtin_popcountll(bitboard & 0x3C3C3C3C0000ULL) * 3; // control of the center 
+            }
+            else
+                score += __builtin_popcountll(bitboard & 0x3C3C3C3C0000ULL) * 1; // control of the center for pawns
+            
 
-        score += __builtin_popcountll(board & 0x7E7E7E7E7E7E00ULL) * 1; // near the center
-        score -= __builtin_popcountll(boardEnemy & 0x7E7E7E7E7E7E00ULL) * 1; // enemy pieces near the center
-        score += __builtin_popcountll(board & 0x3C3C3C3C0000ULL) * 3; // control of the center 
-        score -= __builtin_popcountll(boardEnemy & 0x3C3C3C3C0000ULL) * 3; // enemy control of the center
+        for (auto& [type, bitboard] : piecesEnemy) 
+            if(type != "pawn"){
+                score -= __builtin_popcountll(bitboard & 0x7E7E7E7E7E7E00ULL) * 1;
+                score -= __builtin_popcountll(bitboard & 0x3C3C3C3C0000ULL) * 3;
+            }
+            else
+                score -= __builtin_popcountll(bitboard & 0x3C3C3C3C0000ULL) * 1; // control of the center for pawns
     }
-    
-
-    uint64_t boardPawn = 0, boardEnemyPawn = 0;
-    for (auto& [type, bb] : pieces) 
-        if(type == "pawn") boardPawn |= bb;
-    for (auto& [type, bb] : piecesEnemy) 
-        if(type == "pawn") boardEnemyPawn |= bb;
-
-    // score += __builtin_popcountll(boardPawn & 0x7E7E7E7E7E7E00ULL) * 1; // near the center
-    // score -= __builtin_popcountll(boardEnemyPawn & 0x7E7E7E7E7E7E00ULL) * 1; // enemy pieces near the center
-    score += __builtin_popcountll(boardPawn & 0x3C3C3C3C0000ULL) * 1; // control of the center 
-    score -= __builtin_popcountll(boardEnemyPawn & 0x3C3C3C3C0000ULL) * 1; // enemy control of the center
-
-    // if(initialCheck(1,-color, piecesEnemy, pieces) == 2) score = INT_MAX;
-
-    if(getPieceBitboard(pieces, "king") == 0ULL) score = INT_MIN; // player lost
-    if(getPieceBitboard(piecesEnemy, "king") == 0ULL) score = INT_MAX; // enemy lost
 
     return score;
 }
@@ -205,10 +138,10 @@ std::vector<std::pair<std::string, uint64_t>> pieces, std::vector<std::pair<std:
             int eval = minMax(depth - 1, fullDepth, -turn, -color, piecesEnemyCopy, piecesCopy, alpha, beta);
 
             if(turn == -1){
-            bestEval = std::max(bestEval, eval);
-            alpha = std::max(alpha, eval);
-            if (beta <= alpha)
-                break; // beta cutoff
+                bestEval = std::max(bestEval, eval);
+                alpha = std::max(alpha, eval);
+                if (beta <= alpha)
+                    break; // beta cutoff
             }
             else{
                 bestEval = std::min(bestEval, eval);
@@ -248,12 +181,6 @@ std::vector<std::pair<std::string, uint64_t>> piecesEnemy) {
 
         // if (initialCheck(-turn, -color, piecesEnemyCopy, piecesCopy) == 3)
         //     eval += 100; // if enemy is in checkmate, add bonus
-        
-        // if (initialCheck(-turn, -color, piecesEnemyCopy, piecesCopy) == 3){
-        //     uint64_t king = getPieceBitboard(piecesEnemyCopy, "king");
-        //     if(validMoves(king, -color, piecesEnemyCopy, piecesCopy).size() == 0) 
-        //         eval+=50;
-        // }
 
         if (eval > bestEval) {
             bestEval = eval;
@@ -265,4 +192,51 @@ std::vector<std::pair<std::string, uint64_t>> piecesEnemy) {
     }
 
     return bestMove;
+}
+
+
+std::vector<Move> validMoves(uint64_t piece, int color,std::vector<std::pair<std::string, uint64_t>>& pieces, 
+std::vector<std::pair<std::string, uint64_t>>& piecesEnemy) {
+    std::vector<Move> moves;
+    std::string pieceType;
+
+    uint64_t board = countBoard(pieces);
+    uint64_t boardEnemy = countBoard(piecesEnemy);
+
+    for (auto& [type, bitboard] : pieces) {
+        if (bitboard & piece) {
+            pieceType = type;
+            break;
+        }
+    }
+
+    auto bitboardCopy = piece;
+
+    while (bitboardCopy) {
+        uint64_t onePiece = 1ULL << __builtin_ctzll(bitboardCopy);
+        uint64_t moveMap = iterateMoves(onePiece, board, boardEnemy, color, pieceType);
+            
+        while (moveMap) {
+                uint64_t to = 1ULL << __builtin_ctzll(moveMap);
+
+                auto piecesCopy = pieces;
+                auto piecesEnemyCopy = piecesEnemy;
+
+                Move candidateMove{pieceType, onePiece, to};
+                applyMoveMM(color, piecesCopy, piecesEnemyCopy, candidateMove);
+
+                uint64_t boardCopy = 0, boardEnemyCopy = 0;
+                for (auto& [_, bb] : piecesCopy) boardCopy |= bb;
+                for (auto& [_, bb] : piecesEnemyCopy) boardEnemyCopy |= bb;
+
+                if (initialCheck(1, color, piecesCopy, piecesEnemyCopy) == 0)
+                    moves.push_back(candidateMove);
+
+                moveMap &= (moveMap - 1);
+        }
+
+        bitboardCopy &= (bitboardCopy - 1);
+    }
+
+    return moves;
 }

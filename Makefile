@@ -1,2 +1,2 @@
 all:
-	g++ -o main gui_sdl.cpp -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -mwindows
+	g++ -o chess chess.cpp -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -mwindows

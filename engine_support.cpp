@@ -20,21 +20,6 @@ std::vector<std::pair<std::string, uint64_t*>> piecesBlack = {
     {"pawn", &BOARD.blackPawn}
 };
 
-void setGame(int& gameState, int& turn, int COLOR, std::vector<std::pair<std::string, uint64_t*>>& pieces,
-std::vector<std::pair<std::string, uint64_t*>>& piecesEnemy) {
-    gameState = 0;
-
-    if (COLOR == 1) {
-        pieces = piecesWhite;
-        piecesEnemy = piecesBlack;
-        turn = 1;
-    } else {
-        pieces = piecesBlack;
-        piecesEnemy = piecesWhite;
-        turn = -1;
-    }
-}
-
 std::vector<std::pair<std::string, uint64_t>> dereferencePieces(const std::vector<std::pair<std::string, uint64_t*>>& piecesPtr) {
     std::vector<std::pair<std::string, uint64_t>> piecesCopy;
     for (const auto& [type, bbPtr] : piecesPtr) {

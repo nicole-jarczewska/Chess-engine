@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
     SDL_Renderer* tempRenderer = SDL_CreateRenderer(tempWindow, -1, SDL_RENDERER_ACCELERATED);
 
     COLOR = chooseColor(tempRenderer); // let player choose color
-    int depth = chooseDifficulty(tempRenderer); // let player choose difficulty
+    depth = chooseDifficulty(tempRenderer); // let player choose difficulty
 
     turn = (COLOR == 1) ? 1 : -1; //set turn based on color
     isFlipped = (COLOR == -1); // flip board if player is black

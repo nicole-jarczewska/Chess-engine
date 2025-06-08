@@ -1,8 +1,8 @@
 #pragma once
 
 #include "libraries.hpp"
-#include "moves.hpp"
-#include "board.hpp"
+#include "rules/moves.hpp"
+#include "rules/board.hpp"
 
 struct Move {
     std::string pieceType;
@@ -14,9 +14,6 @@ extern Moves MOVES;
 extern Board BOARD;
 extern std::vector<std::pair<std::string, uint64_t*>> piecesBlack;
 extern std::vector<std::pair<std::string, uint64_t*>> piecesWhite;
-
-void setGame(int& gameState, int& turn, int COLOR, std::vector<std::pair<std::string, uint64_t*>>& pieces,
-std::vector<std::pair<std::string, uint64_t*>>& piecesEnemy);
 
 std::vector<std::pair<std::string, uint64_t>> dereferencePieces(const std::vector<std::pair<std::string, uint64_t*>>& piecesPtr);
 
@@ -37,8 +34,8 @@ void applyMoveMM(int color, std::vector<std::pair<std::string, uint64_t>>& piece
 
 std::vector<Move> generateAllMoves(const std::vector<std::pair<std::string, uint64_t>>& pieces, uint64_t board, uint64_t boardEnemy, int color);
 
-int minMax(int depth, int fullDepth, int turn, int color, uint64_t board, uint64_t boardEnemy,
-std::vector<std::pair<std::string, uint64_t>> pieces, std::vector<std::pair<std::string, uint64_t>> piecesEnemy, int alpha, int beta);
+int minMax(int depth, int fullDepth, int turn, int color, std::vector<std::pair<std::string, uint64_t>> pieces, 
+std::vector<std::pair<std::string, uint64_t>> piecesEnemy, int alpha, int beta);
 
 Move findBestMove(int turn, int depth, int color, std::vector<std::pair<std::string, uint64_t>> pieces,
 std::vector<std::pair<std::string, uint64_t>> piecesEnemy);
